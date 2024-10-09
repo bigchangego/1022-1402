@@ -1,0 +1,73 @@
+type: opensystemspec.com/SystemV1
+name: team-chat-ai 
+spec:
+  envs:
+    type : envs.opensystemspec.com/functioncat/EnvironmentsV1
+    sepc:
+      - name: prod
+        mapings:
+           - branchName: main
+             mappingsMethod: dynamic
+  vars:
+    type : vars.opensystemspec.com/functioncat/VariablesV1
+    spec:
+      - name: log_level
+        value: info
+      - name: BAIDU_API_KEY
+        value: abc
+      - name: BAIDU_SECRET_KEY
+        value: abc
+    output:
+      Variables:
+        env1:
+          key1:value1
+          key2:value2
+        env2:
+          key1:valuex
+          key2:valuey
+  apps:
+    - name : chat-ui
+      type : apps.opensystemspec.com/functioncat/WebFrontendAppV1
+      spec:
+        buildRootPath : apps/chat-ui
+        buildCommand : npm run build 
+        buildOutputPath : apps/chat-ui/dist 
+        output:
+          connections:
+            - host: team-chat-ai--{env}.hanshumao.com
+              path: /apps/chat-ui
+              protocols: https
+            - host: team-chat-ai--{env}-chat-ai-app.hanshumao.com
+              path: /
+              protocols: https
+            - host: s-xxxxxxt.hamshumao.com
+              path: /apps/chat-ui
+              protocols: https
+            - host: d-xxxxxxt.hamshumao.com
+              path: /apps/chat-ui
+              protocols: https
+    - name : chat-api 
+      type : apps.opensystemspec.com/functioncat/WebAPIAppV1
+      environment: ''
+      spec:
+        build:
+          buildRootPath : apps/chat-api 
+          buildCommand :  
+          buildOutputPath : apps/chat-api
+        runtime :
+          startCommand : node server.js 
+          type : functioncat-severless-web-api-nodejs18 
+          memory: 1GB
+          port : 3000 
+          timeout : 10 
+      output:
+          connections:
+            - host: chat-api--{env}.hanshumao.com
+              path: /apps/user-portal
+              protocols: https
+            - host: chat-api--{env}-chat-api-app.hanshumao.com
+              path: /
+              protocols: https
+            - host: d-xxxxxx.hamshumao.com
+              path: /
+              protocols: https

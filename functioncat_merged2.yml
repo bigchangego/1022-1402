@@ -1,0 +1,58 @@
+apps:
+  chat-api:
+    envs:
+      default:
+        branch: main
+        build:
+          command: null
+          outputPath: apps/chat-api
+          rootPath: apps/chat-api
+        runtime:
+          memory: 1GB
+          port: 3000
+          startCommand: node server.js
+          timeout: 10
+          type: functioncat-severless-web-api-nodejs18
+      dev: null
+      prod: null
+    type: WebAPIApp
+  chat-ui:
+    envs:
+      default:
+        branch: main
+        build:
+          command: npm run build
+          outputPath: apps/chat-ui/dist
+          rootPath: apps/chat-ui
+      dev:
+        branch: dev
+      prod:
+        buildCommand: npm run build --production
+    type: WebFrontendApp
+name: Team Chat AI
+opensystem: 1
+services:
+  chat-db:
+    envs:
+      default:
+        auth:
+          apiKey: xxx
+          apiSecret: xxx
+        branch: main
+        engine: mysql
+        size: small.1t
+      prod: null
+    type: functioncat/v1/AWSDynamoDB
+  data-store:
+    envs:
+      default:
+        auth:
+          apiKey: xxx
+          apiSecret: xxx
+        branch: main
+        engine: mysql
+        size: small.1t
+    type: Store1
+vars:
+- name: LOG_LEVEL
+  value: INFO

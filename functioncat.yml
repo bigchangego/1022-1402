@@ -1,0 +1,107 @@
+opensystem: 1.0
+metadata: 
+  name: Team Chat AI 
+  vars:
+    - name: AWS_SECRET
+      default: "xxx"
+      description: AWS secret used for authentication, need xxxx permissions
+    - name: AWS_KEY
+      default: "xxx"
+      description: AWS secret used for authentication, need xxxx permissions
+envs:
+  - key: push
+    branch: main
+  - key: dev
+    branch: dev
+  - key: staging
+    branch: main
+  - key: prod
+    branch: main
+    trigger: manual
+routes:
+  mainApp: chat-ui
+  mainEnv: prod
+apps:
+  chatui:
+    type : web_frontend
+    envs:
+      push:
+        build:
+          rootPath : apps/chat-ui
+          jobs:
+            image: "node-abc"
+            command:  npm run test
+        deploy: 
+          disable: true
+      default:
+        disabled: false
+        build:
+          rootPath : apps/chat-ui
+          command : npm run build 
+          outputPath : apps/chat-ui/dist 
+        deploy: 
+          region: cn-north-china
+    output:
+      orgSlug: "o-abc"
+      systemSlug: "s-abc"
+      envSlug: dev
+      projectSlug: "p-abc"
+      appSlug: "chat-ui"
+      appType: "WebFrontendApp"
+      pipelineId: "p-123"
+      deploymentId: "d-123t"
+      finalStage: "READY"
+      createdAt: ""
+      revertSupported: true
+  chatapi :
+    type : web_api
+    envs:
+      default:
+        disabled: false
+        build:
+          rootPath : apps/chat-api 
+          command :  
+          outputPath : apps/chat-api
+        deploy :
+          rootPath : apps/chat-api 
+          disabled: false
+          region: "cn-north-china"
+          varsIncluded: 
+            - DEBUG_MODE
+            - BAIDU_API_KEY
+            - BAIDU_API_SECRET
+          runtime:
+            type : functioncat-severless-web-api-nodejs18 
+            configs:
+              - startCommand : node server.js 
+              - memory: 1GB
+              - port : 3000 
+              - timeout : 10 
+services: 
+  chat-db: 
+     type: functioncat/v1/AWSDynamoDB
+     envs:
+      default:
+        build: 
+          command: 
+        deploy:
+          rootPath: "apps/chat-db"
+          varKeys: 
+            - AWS_KEY
+            - AWS_SECRET
+          runtime:
+            type: mysql
+            config:
+              - engine: mysql
+              - size: small.1t
+              - initScriptPath: "init.sql"
+  data-store: 
+     type: Store1
+     envs:
+      default:
+        branch: main
+        engine: mysql
+        size: small.1t
+        auth:
+          apiKey: 'xxx'
+          apiSecret: 'xxx'
