@@ -1,73 +1,100 @@
-type: opensystemspec.com/SystemV1
-name: team-chat-ai 
-spec:
-  envs:
-    type : envs.opensystemspec.com/functioncat/EnvironmentsV1
-    sepc:
-      - name: prod
-        mapings:
-           - branchName: main
-             mappingsMethod: dynamic
+schema: 1.0.0
+info:
+  name: Example Metadata1 1018-1830
   vars:
-    type : vars.opensystemspec.com/functioncat/VariablesV1
-    spec:
-      - name: log_level
-        value: info
-      - name: BAIDU_API_KEY
-        value: abc
-      - name: BAIDU_SECRET_KEY
-        value: abc
-    output:
-      Variables:
-        env1:
-          key1:value1
-          key2:value2
-        env2:
-          key1:valuex
-          key2:valuey
-  apps:
-    - name : chat-ui
-      type : apps.opensystemspec.com/functioncat/WebFrontendAppV1
-      spec:
-        buildRootPath : apps/chat-ui
-        buildCommand : npm run build 
-        buildOutputPath : apps/chat-ui/dist 
-        output:
-          connections:
-            - host: team-chat-ai--{env}.hanshumao.com
-              path: /apps/chat-ui
-              protocols: https
-            - host: team-chat-ai--{env}-chat-ai-app.hanshumao.com
-              path: /
-              protocols: https
-            - host: s-xxxxxxt.hamshumao.com
-              path: /apps/chat-ui
-              protocols: https
-            - host: d-xxxxxxt.hamshumao.com
-              path: /apps/chat-ui
-              protocols: https
-    - name : chat-api 
-      type : apps.opensystemspec.com/functioncat/WebAPIAppV1
-      environment: ''
-      spec:
+    BAIDU_API_KEY:
+      default: value1
+      description: This is variable 1
+    BAIDU_SECRET_KEY:
+      default: v2
+      description: This is variable 1
+envs:
+  push:
+    branch: feature-1
+  dev:
+    branch: dev
+  staging:
+    branch: main
+  prod:
+    branch: main
+    trigger: manual
+routes:
+  main_env: prod
+  main_app: chatui
+apps:
+  chatui:
+    type: web_frontend
+    envs:
+      staging:
         build:
-          buildRootPath : apps/chat-api 
-          buildCommand :  
-          buildOutputPath : apps/chat-api
-        runtime :
-          startCommand : node server.js 
-          type : functioncat-severless-web-api-nodejs18 
-          memory: 1GB
-          port : 3000 
-          timeout : 10 
-      output:
-          connections:
-            - host: chat-api--{env}.hanshumao.com
-              path: /apps/user-portal
-              protocols: https
-            - host: chat-api--{env}-chat-api-app.hanshumao.com
-              path: /
-              protocols: https
-            - host: d-xxxxxx.hamshumao.com
-              path: /
-              protocols: https
+          root_path: apps/chat-ui
+          command: pwd; npm install; pwd; npm run build
+          output_path: apps/chat-ui/dist
+          before_script: ''
+        provision:
+          start_command: ''
+          root_path: apps/chat-ui/dist
+          runtime:
+            type: runtime-type
+            configs:
+              size: t1
+              memory: 1gb
+          vars:
+            - LOG_LEVEL
+            - API_KEY
+            - NOT_EXIST_KEY
+      prod:
+        build:
+          root_path: apps/chat-ui
+          command: pwd; npm install; pwd; npm run build
+          output_path: apps/chat-ui/dist
+          before_script: ''
+        provision:
+          start_command: ''
+          root_path: apps/chat-ui/dist
+          runtime:
+            type: runtime-type
+            configs:
+              size: t1
+              memory: 1gb
+          vars:
+            - LOG_LEVEL
+            - API_KEY
+            - NOT_EXIST_KEY
+  chatapi:
+    type: web_api
+    envs:
+      staging:
+        build:
+          root_path: apps/chat-api
+          command: pwd; npm install
+          output_path: apps/chat-api
+          before_script: ''
+        provision:
+          root_path: apps/chat-api
+          runtime:
+            type: severless-nodejs18x
+            configs:
+              timeout: '60'
+              start_command: node server.js
+          vars:
+            - LOG_LEVEL
+            - BAIDU_API_KEY
+            - BAIDU_SECRET_KEY
+      prod:
+        build:
+          root_path: apps/chat-api
+          command: pwd; npm install
+          output_path: apps/chat-api
+          before_script: ''
+        provision:
+          root_path: apps/chat-api
+          runtime:
+            type: functioncat-severless-nodejs18
+            configs:
+              timeout: '60'
+              start_command: node server.js
+          vars:
+            - LOG_LEVEL
+            - BAIDU_API_KEY
+            - BAIDU_SECRET_KEY
