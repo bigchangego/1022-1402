@@ -1,4 +1,4 @@
-schema: 1.0.0
+opensystem: v1.0.0
 info:
   name: Example Metadata1 1018-1830
   vars:
@@ -35,7 +35,7 @@ apps:
           start_command: ''
           root_path: apps/chat-ui/dist
           runtime:
-            type: runtime-type
+            type: nodejs18x
             configs:
               size: t1
               memory: 1gb
@@ -53,7 +53,7 @@ apps:
           start_command: ''
           root_path: apps/chat-ui/dist
           runtime:
-            type: runtime-type
+            type: nodejs18x
             configs:
               size: t1
               memory: 1gb
@@ -73,7 +73,7 @@ apps:
         provision:
           root_path: apps/chat-api
           runtime:
-            type: severless-nodejs18x
+            type: nodejs18x
             configs:
               timeout: '60'
               start_command: node server.js
@@ -90,7 +90,7 @@ apps:
         provision:
           root_path: apps/chat-api
           runtime:
-            type: functioncat-severless-nodejs18
+            type: nodejs18x
             configs:
               timeout: '60'
               start_command: node server.js
