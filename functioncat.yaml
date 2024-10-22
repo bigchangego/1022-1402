@@ -19,13 +19,13 @@ envs:
     branch: main
     trigger: manual
 routes:
-  main_env: prod
+  main_env: dev
   main_app: chatui
 apps:
   chatui:
     type: web_frontend
     envs:
-      staging:
+      dev:
         build:
           root_path: apps/chat-ui
           command: pwd; npm install; pwd; npm run build
@@ -64,7 +64,7 @@ apps:
   chatapi:
     type: web_api
     envs:
-      staging:
+      dev:
         build:
           root_path: apps/chat-api
           command: pwd; npm install
